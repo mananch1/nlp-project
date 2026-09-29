@@ -1,0 +1,42 @@
+[
+  {
+    "id": "FSSAI-ADD-3.1",
+    "regulation": "Food Safety and Standards (Food Products Standards and Food Additives) Regulations, 2011",
+    "section": "Regulation 3.1 & Appendix A",
+    "title": "Permitted Food Additives and Use Under Good Manufacturing Practice (GMP)",
+    "category": "additives",
+    "text": "Food additives including Acidity Regulators (such as Citric Acid INS 330, Malic Acid INS 296, Tartaric Acid INS 334), Anticaking Agents (INS 551 Silicon Dioxide), and Natural Colouring substances (INS 160c Paprika Extract) are permitted in specified food categories including savoury snacks and potato chips at levels governed by Good Manufacturing Practice (GMP). Additives must be of food-grade purity and shall not be used to conceal damaged or defective raw materials.",
+    "mandatory": true,
+    "keywords": ["food additives", "acidity regulators", "ins 330", "citric acid", "ins 296", "malic acid", "ins 334", "tartaric acid", "ins 551", "anticaking agent", "ins 160c", "gmp", "good manufacturing practice"]
+  },
+  {
+    "id": "FSSAI-ADD-3.2",
+    "regulation": "Food Safety and Standards (Food Products Standards and Food Additives) Regulations, 2011",
+    "section": "Regulation 3.1.4 & Table 1",
+    "title": "Classification of Preservatives (Class I vs Class II)",
+    "category": "preservatives",
+    "text": "Preservatives are classified into Class I (natural preservatives: common salt, sugar, dextrose, glucose, spices, vinegar) and Class II (chemical preservatives: benzoic acid, sodium benzoate INS 211, sulphites INS 220-228, sorbic acid INS 200, nitrates/nitrites). Use of more than one Class II preservative is restricted, and any added Class II chemical preservative must be explicitly declared on the label with its specific name and INS code.",
+    "mandatory": true,
+    "keywords": ["preservatives", "class I preservatives", "class II preservatives", "sodium benzoate", "ins 211", "sulphites", "ins 220", "sorbic acid", "chemical preservatives"]
+  },
+  {
+    "id": "FSSAI-TRANSFAT-2021",
+    "regulation": "Food Safety and Standards (Prohibition and Restrictions on Sales) Second Amendment Regulations, 2021",
+    "section": "Regulation 2.3.15(7)",
+    "title": "Statutory Cap on Trans Fatty Acids (2% Limit)",
+    "category": "trans_fat",
+    "text": "Effective January 1, 2022, food products in which edible oils and fats are used as an ingredient shall not contain trans fatty acids more than 2% by weight of the total oils/fats present in the product. Products declaring 0g trans fat or trans fat free must have less than 0.2g trans fat per 100g.",
+    "mandatory": true,
+    "keywords": ["trans fatty acids", "trans fat limit", "2 percent", "edible oils", "palmolein", "hydrogenated fat", "phvo"]
+  },
+  {
+    "id": "FSSAI-SCHOOL-HFSS-2020",
+    "regulation": "Food Safety and Standards (Safe Food and Balanced Diets for Children in School) Regulations, 2020",
+    "section": "Regulation 4 & Schedule I",
+    "title": "Restrictions on High in Fat, Sugar and Salt (HFSS) Foods for Children",
+    "category": "children_health",
+    "text": "Foods high in fat, sugar, or salt (HFSS) including potato chips, fried savoury snacks, carbonated sweetened beverages, and confectionery shall not be sold, marketed, or advertised to school children within school premises or within a 50-meter radius around school gates. Snacks containing exceeding 20g fat or 1000mg sodium per 100g are classified as HFSS foods.",
+    "mandatory": true,
+    "keywords": ["hfss", "school children", "children health", "potato chips", "high sodium", "high fat", "fried snacks", "safe food for children"]
+  }
+]

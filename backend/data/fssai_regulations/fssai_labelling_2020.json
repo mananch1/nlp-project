@@ -1,0 +1,122 @@
+[
+  {
+    "id": "FSSAI-LABEL-5.1",
+    "regulation": "Food Safety and Standards (Labelling and Display) Regulations, 2020",
+    "section": "Regulation 5(1)",
+    "title": "General Requirements for Labelling",
+    "category": "general",
+    "text": "Every prepackaged food shall carry a label containing information required under these regulations. The particulars of declaration on the label shall be in English or Hindi in Devanagari script. Information shall be clear, prominent, indelible and readily legible by the consumer under normal conditions of purchase and use. The information shall not be false, misleading or deceptive, or likely to create an erroneous impression regarding its character, quantity, or safety in any respect.",
+    "mandatory": true,
+    "keywords": ["general requirements", "hindi", "english", "legibility", "prominence", "false", "misleading", "indelible"]
+  },
+  {
+    "id": "FSSAI-LABEL-5.2.A",
+    "regulation": "Food Safety and Standards (Labelling and Display) Regulations, 2020",
+    "section": "Regulation 5(2)(a)",
+    "title": "Nutritional Information - Mandatory Parameters",
+    "category": "nutrition",
+    "text": "The nutritional information per 100g or 100ml or per single consumption pack of the product and per serve percentage contribution to Recommended Dietary Allowances (RDA) shall be given on the label: (i) Energy value in kcal; (ii) Amounts of Protein (g); (iii) Carbohydrate (g) and Total Sugars (g), and Added Sugars (g); (iv) Total Fat (g), Saturated Fat (g), and Trans Fat (other than naturally occurring trans fat) (g); (v) Sodium (mg). Declaration of saturated fat and trans fat are strictly mandatory on all packaged foods.",
+    "mandatory": true,
+    "keywords": ["nutritional information", "energy", "protein", "carbohydrate", "total sugars", "added sugars", "total fat", "saturated fat", "trans fat", "sodium", "rda", "per 100g"]
+  },
+  {
+    "id": "FSSAI-LABEL-5.2.B",
+    "regulation": "Food Safety and Standards (Labelling and Display) Regulations, 2020",
+    "section": "Regulation 5(2)(b)",
+    "title": "Nutritional Information - Trans Fat Free Threshold",
+    "category": "nutrition",
+    "text": "A food product may be claimed as 'Trans fat free' only if the trans fat content is less than 0.2g per serving of food, and the content of saturated fat does not exceed 1.5g per 100g for solids or 0.75g per 100ml for liquids and not more than 10% of total energy. If trans fat is claimed as zero or free, the packaging must explicitly state that saturated fat does not exceed the permissible threshold.",
+    "mandatory": false,
+    "keywords": ["trans fat free", "trans fat", "saturated fat", "0.2g", "serving", "limits"]
+  },
+  {
+    "id": "FSSAI-LABEL-5.2.C",
+    "regulation": "Food Safety and Standards (Labelling and Display) Regulations, 2020",
+    "section": "Regulation 5(2)(c)",
+    "title": "Exemptions from Nutritional Information",
+    "category": "nutrition",
+    "text": "The following foods are exempt from mandatory nutritional information unless a nutrition or health claim is made: unprocessed agricultural produce (fresh fruits, vegetables), raw single-ingredient spices, table salt, tea, coffee, packaged drinking water, and alcoholic beverages. If any nutrition claim is made on such products, complete nutritional declaration becomes mandatory.",
+    "mandatory": false,
+    "keywords": ["nutritional exemptions", "spices", "raw produce", "tea", "coffee", "water", "salt"]
+  },
+  {
+    "id": "FSSAI-LABEL-5.3.A",
+    "regulation": "Food Safety and Standards (Labelling and Display) Regulations, 2020",
+    "section": "Regulation 5(3)(a)",
+    "title": "Mandatory Vegetarian Logo & Symbol",
+    "category": "symbol",
+    "text": "Every package of 'Vegetarian' food shall bear a symbol that consists of a green colour filled circle having a specified diameter, inside a square with a green outline having specified dimensions. The symbol shall be prominently displayed on the principal display panel in close proximity to the name or brand name of the food product. Minimum diameter of the green circle is 3mm for small packages up to 100 sq cm, 4mm for packages 100 to 500 sq cm, and 6mm for packages above 500 sq cm.",
+    "mandatory": true,
+    "keywords": ["vegetarian symbol", "green dot", "green circle", "green square", "veg logo", "principal display panel"]
+  },
+  {
+    "id": "FSSAI-LABEL-5.3.B",
+    "regulation": "Food Safety and Standards (Labelling and Display) Regulations, 2020",
+    "section": "Regulation 5(3)(b)",
+    "title": "Mandatory Non-Vegetarian Logo & Symbol",
+    "category": "symbol",
+    "text": "Every package of 'Non-Vegetarian' food (containing whole or part of any animal including birds, fresh water or marine animals, or eggs as ingredient) shall bear a symbol that consists of a brown colour filled triangle inside a square with a brown outline. The brown triangle symbol must be clearly visible on the front display panel.",
+    "mandatory": true,
+    "keywords": ["non-vegetarian symbol", "brown triangle", "brown dot", "non-veg logo", "meat", "egg", "fish", "animal origin"]
+  },
+  {
+    "id": "FSSAI-LABEL-5.4",
+    "regulation": "Food Safety and Standards (Labelling and Display) Regulations, 2020",
+    "section": "Regulation 5(4)",
+    "title": "Declaration of List of Ingredients",
+    "category": "ingredients",
+    "text": "A complete list of ingredients shall be declared on the label under the heading 'Ingredients' or 'List of Ingredients'. Ingredients shall be listed in descending order of their weight or volume (m/m or v/v) at the time of manufacture of the food. Added water shall be declared in the list of ingredients unless it forms part of an ingredient such as brine, syrup or broth used in a compound food. Compound ingredients representing more than 5% of the food must have their individual sub-ingredients listed.",
+    "mandatory": true,
+    "keywords": ["ingredients list", "descending order", "descending weight", "added water", "compound ingredients"]
+  },
+  {
+    "id": "FSSAI-LABEL-5.5",
+    "regulation": "Food Safety and Standards (Labelling and Display) Regulations, 2020",
+    "section": "Regulation 5(5)",
+    "title": "Declaration of Food Additives and Class Titles",
+    "category": "additives",
+    "text": "For food additives permitted for use in foods and included in the list of ingredients, class titles shall be declared together with the specific name or recognized international numerical identification system (INS Number). Examples: 'Preservative (INS 211)' or 'Sodium Benzoate', 'Antioxidant (INS 320)'. If an artificial flavoring agent or coloring agent is added, it must be accompanied by the mandatory declaration: 'CONTAINS PERMITTED NATURAL / SYNTHETIC COLOUR(S)' or 'CONTAINS ADDED FLAVOUR (NATURAL / NATURE IDENTICAL / ARTIFICIAL FLAVOURING SUBSTANCES)'.",
+    "mandatory": true,
+    "keywords": ["food additives", "ins number", "class titles", "preservatives", "artificial colour", "added flavour", "ins 211", "ins 320"]
+  },
+  {
+    "id": "FSSAI-LABEL-5.6",
+    "regulation": "Food Safety and Standards (Labelling and Display) Regulations, 2020",
+    "section": "Regulation 5(6)",
+    "title": "FSSAI Logo and 14-Digit License Number",
+    "category": "license",
+    "text": "The FSSAI logo and 14-digit Food Safety License number issued to the manufacturer, packer, or marketer shall be displayed on the label in the following format: 'Lic. No. XXXXXXXXXXXXXX'. The logo and license number must be in contrasting colour to the background. In case of imported food, the FSSAI logo and license number of the importer shall be displayed along with name and address.",
+    "mandatory": true,
+    "keywords": ["fssai logo", "fssai license number", "lic no", "14 digit", "manufacturer license", "importer license"]
+  },
+  {
+    "id": "FSSAI-LABEL-5.7",
+    "regulation": "Food Safety and Standards (Labelling and Display) Regulations, 2020",
+    "section": "Regulation 5(7)",
+    "title": "Net Quantity and Retail Sale Price (MRP)",
+    "category": "quantity_price",
+    "text": "Net quantity by weight or volume or number shall be declared on every package in metric system units (g, kg, ml, l). Maximum Retail Price (MRP inclusive of all taxes) and customer care details including phone number, email ID, and postal address of the designated grievance officer must be clearly printed on the label.",
+    "mandatory": true,
+    "keywords": ["net quantity", "mrp", "maximum retail price", "customer care", "consumer grievance", "phone", "email"]
+  },
+  {
+    "id": "FSSAI-LABEL-5.8",
+    "regulation": "Food Safety and Standards (Labelling and Display) Regulations, 2020",
+    "section": "Regulation 5(8)",
+    "title": "Date of Manufacture, Packaging and Expiry / Best Before",
+    "category": "dates",
+    "text": "The date of manufacture or packaging shall be clearly declared on the label (Day, Month, Year or Month and Year). In addition, 'Best Before [Date]' or 'Expiry Date / Use By [Date]' must be explicitly stated. For foods having a shelf-life not more than seven days (perishable dairy, fresh bakery, cut meats), the 'Expiry Date' or 'Use by date' specifying the exact day, month, and year is mandatory, and the product cannot be sold beyond this date.",
+    "mandatory": true,
+    "keywords": ["date of manufacture", "mfg date", "packaging date", "expiry date", "use by date", "best before", "shelf life", "perishable"]
+  },
+  {
+    "id": "FSSAI-LABEL-5.9",
+    "regulation": "Food Safety and Standards (Labelling and Display) Regulations, 2020",
+    "section": "Regulation 5(9)",
+    "title": "Mandatory Allergen Declaration",
+    "category": "allergens",
+    "text": "The presence of the following allergens shall be declared separately in bold font or boxed format with the heading 'ALLERGEN ADVICE: Contains [...]' or 'Contains [...]': (i) Cereals containing gluten (wheat, rye, barley, oats, spelt); (ii) Crustaceans and products thereof; (iii) Eggs and egg products; (iv) Fish and fish products; (v) Peanuts, tree nuts (almonds, walnuts, cashews, pistachios) and products thereof; (vi) Soybeans and products thereof; (vii) Milk and milk products; (viii) Sulphite in concentrations of 10mg/kg or more. In case of potential cross-contamination during manufacturing, the statement 'May contain traces of [...]' must be provided.",
+    "mandatory": true,
+    "keywords": ["allergen declaration", "allergen advice", "gluten", "wheat", "peanuts", "tree nuts", "milk", "soy", "soybean", "egg", "fish", "sulphite", "cross contamination"]
+  }
+]

@@ -1,0 +1,82 @@
+[
+  {
+    "id": "FSSAI-CLAIM-4.1",
+    "regulation": "Food Safety and Standards (Advertising and Claims) Regulations, 2018",
+    "section": "Regulation 4(1)",
+    "title": "General Principles - Prohibition of Misleading Claims",
+    "category": "advertising_general",
+    "text": "Claims must be truthful, unambiguous, meaningful, not misleading, and must help consumers to comprehend the information provided. A claim shall not state or imply that the food possesses special qualities or nutritional advantages when in fact such qualities are common to all similar foods of that category. Advertisements and packaging shall not undermine the importance of a healthy balanced diet or discourage breastfeeding.",
+    "mandatory": true,
+    "keywords": ["misleading claims", "truthful", "deceptive advertising", "fair comparison", "unambiguous"]
+  },
+  {
+    "id": "FSSAI-CLAIM-5.SUGAR_FREE",
+    "regulation": "Food Safety and Standards (Advertising and Claims) Regulations, 2018",
+    "section": "Schedule II, Clause 1",
+    "title": "Nutrition Claim - 'Sugar Free' or 'Zero Sugar'",
+    "category": "nutrition_claims",
+    "text": "A claim that a food is 'Sugar free', 'Free of sugar', or 'Zero sugar' may only be made where the food contains not more than 0.5g of sugars (including sucrose, glucose, fructose, and lactose) per 100g in case of solid food, or 0.5g per 100ml in case of liquid food. If artificial sweeteners or polyols are substituted, mandatory warning regarding the type of polyol / sweetener must be declared on the front packaging.",
+    "mandatory": false,
+    "keywords": ["sugar free", "zero sugar", "0.5g", "sucrose", "fructose", "sweetener", "nutrition claim"]
+  },
+  {
+    "id": "FSSAI-CLAIM-5.NO_ADDED_SUGAR",
+    "regulation": "Food Safety and Standards (Advertising and Claims) Regulations, 2018",
+    "section": "Schedule II, Clause 2",
+    "title": "Nutrition Claim - 'No Added Sugar' or 'Without Added Sugars'",
+    "category": "nutrition_claims",
+    "text": "A claim 'No Added Sugar' or 'Without Added Sugar' can only be made if: (i) No sugar of any kind has been added during manufacturing; (ii) The food contains no ingredients that contain sugars added as an ingredient (such as sucrose, glucose, fructose, maltose, corn syrup, high fructose corn syrup, invert sugar, jaggery, honey, malt syrup, concentrated fruit juices or purees); and (iii) If the food contains naturally occurring sugars (e.g. fruit sugars or milk lactose), it must bear the mandatory statement: 'CONTAINS NATURALLY OCCURRING SUGARS' adjacent to the claim.",
+    "mandatory": false,
+    "keywords": ["no added sugar", "without added sugar", "jaggery", "honey", "fruit concentrate", "corn syrup", "maltodextrin", "naturally occurring sugars"]
+  },
+  {
+    "id": "FSSAI-CLAIM-5.LOW_FAT",
+    "regulation": "Food Safety and Standards (Advertising and Claims) Regulations, 2018",
+    "section": "Schedule II, Clause 3",
+    "title": "Nutrition Claim - 'Low Fat' and 'Fat Free'",
+    "category": "nutrition_claims",
+    "text": "A claim that a food is 'Low Fat' may only be made where the product contains not more than 3g of fat per 100g for solids or 1.5g of fat per 100ml for liquids. A claim 'Fat Free' or 'Zero Fat' may only be made if the product contains not more than 0.5g of fat per 100g or 100ml. Products naturally low in fat must not claim exclusivity if comparable products share the same property.",
+    "mandatory": false,
+    "keywords": ["low fat", "fat free", "zero fat", "3g fat", "0.5g fat", "solid", "liquid"]
+  },
+  {
+    "id": "FSSAI-CLAIM-5.TRANS_FAT_FREE",
+    "regulation": "Food Safety and Standards (Advertising and Claims) Regulations, 2018",
+    "section": "Schedule II, Clause 4",
+    "title": "Nutrition Claim - 'Trans Fat Free'",
+    "category": "nutrition_claims",
+    "text": "A food can claim 'Trans Fat Free' or '0g Trans Fat' only when: (i) Trans fat content is less than 0.2g per serving; AND (ii) Saturated fat content is not more than 1.5g per 100g for solids or 0.75g per 100ml for liquids; AND (iii) The food does not contain partially hydrogenated vegetable oils (PHVO/Vanaspati).",
+    "mandatory": false,
+    "keywords": ["trans fat free", "0g trans fat", "partially hydrogenated", "vanaspati", "saturated fat threshold"]
+  },
+  {
+    "id": "FSSAI-CLAIM-5.NATURAL_PURE",
+    "regulation": "Food Safety and Standards (Advertising and Claims) Regulations, 2018",
+    "section": "Schedule V, Clause 1",
+    "title": "Use of Words 'Natural', 'Pure', 'Fresh', 'Traditional'",
+    "category": "descriptive_claims",
+    "text": "The word 'Natural' shall only be used for single foods of a non-composite nature, derived directly from plants or animals, to which nothing has been added (no food additives, preservatives, synthetic color, flavor, or vitamins/minerals) and which have undergone minimal processing (washing, peeling, drying, freezing, pasteurizing). A composite food that contains added preservatives or artificial additives cannot claim '100% Natural'. The word 'Pure' shall only be used for single-ingredient unadulterated foods without any additives or blending.",
+    "mandatory": false,
+    "keywords": ["natural", "100% natural", "pure", "fresh", "traditional", "no preservatives", "single ingredient", "minimal processing"]
+  },
+  {
+    "id": "FSSAI-CLAIM-5.ORGANIC",
+    "regulation": "Food Safety and Standards (Advertising and Claims) Regulations, 2018",
+    "section": "Regulation 7 & Food Safety (Organic Foods) Regulations",
+    "title": "Use of Term 'Organic' & Jaivik Bharat Logo",
+    "category": "certification_claims",
+    "text": "Food products claimed to be 'Organic' must be certified under the National Programme for Organic Production (NPOP) or Participatory Guarantee System for India (PGS-India). The package must prominently carry the 'Jaivik Bharat' logo along with the valid certification number or FSSAI organic license accreditation. Uncertified foods claiming 'Organic' or 'Jaivik' commit an offence under Section 22 of the FSS Act.",
+    "mandatory": false,
+    "keywords": ["organic", "jaivik bharat", "npop", "pgs-india", "certification", "organic food"]
+  },
+  {
+    "id": "FSSAI-CLAIM-5.HEALTH_IMMUNITY",
+    "regulation": "Food Safety and Standards (Advertising and Claims) Regulations, 2018",
+    "section": "Regulation 8 & Schedule IV",
+    "title": "Health Claims, Immunity Boosting, and Disease Risk Reduction",
+    "category": "health_claims",
+    "text": "Claims regarding enhancement of immunity, cognitive performance, or reduction of disease risk (e.g. 'prevents cancer', 'boosts immunity', 'lowers cholesterol') shall only be made if explicitly permitted under Schedule IV of these regulations or backed by prior scientific approval from the Food Authority. Foods shall not state or imply that any food or nutrient can treat, cure, or prevent any human disease, infection, or pathological condition.",
+    "mandatory": false,
+    "keywords": ["immunity", "immunity booster", "cures disease", "health claim", "disease risk reduction", "fssai approval"]
+  }
+]
