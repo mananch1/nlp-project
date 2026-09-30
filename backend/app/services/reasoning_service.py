@@ -13,34 +13,133 @@ HINGLISH_WORDS = {
     "kya", "hai", "bahi", "bhai", "bata", "btao", "acche", "accha", "achi", "he", "mujhe", 
     "bhi", "nhi", "nahi", "nuksan", "chahiye", "ise", "yeh", "ye", "pe", "se", "me", "mein", 
     "wala", "wali", "kitna", "hoga", "hogi", "batao", "bataiye", "khaye", "kha", "sakta", "sakte",
-    "kaise", "thik", "theek", "pet", "namak", "chini", "tel", "dard"
+    "kaise", "thik", "theek", "pet", "namak", "chini", "tel", "dard", "kripya", "bataye"
+}
+
+MARATHI_DEVANAGARI_MARKERS = {
+    "आहे", "आहेत", "नाही", "नाहीत", "होते", "होती", "का", "मला", "तुम्हाला", "आम्हाला", 
+    "त्यांना", "आपल्याला", "हे", "यात", "याच्यात", "त्यात", "सांगा", "करा", "बघा", "पहा", 
+    "चांगले", "चांगली", "वाईट", "साठी", "घटक", "प्रमाण", "वापर", "खाऊ", "शकतो", "शकते", 
+    "होईल", "असेल", "पाहिजे", "कसे", "कशी", "काय", "कशासाठी", "कसा", "किती", "आणि", 
+    "पण", "किंवा", "त्रास", "आरोग्य", "आरोग्यासाठी", "पोटात", "जळजळ", "प्रिजर्व्हेटिव्ह", "पित्त",
+    "मीठ", "साखर", "चरबी", "मुलांसाठी", "दिनांक", "भाऊ", "दादा", "ताई", "नको", "छान"
+}
+
+MARATHI_LATIN_WORDS = {
+    "bhau", "bhao", "dada", "tai", "paije", "pahije", "pahijel", "hawa", "havi", "have",
+    "mala", "tula", "amhi", "tumhi", "tumhala", "amhala", "tyanna", "tyala", "tila",
+    "ahe", "aahe", "ahet", "nahi", "nahit", "nay", "navhta", "navhti",
+    "sanga", "sang", "sango", "sangna", "he", "hya", "hyat", "tyat", "yat",
+    "sathi", "changla", "changli", "changale", "kasa", "kashi", "kashe", "kas",
+    "hoil", "asel", "kay", "kaay", "tras", "khau", "shakto", "shakte",
+    "ani", "pan", "kinva", "kiti", "bagha", "bgh", "kara", "jaljal", "potat", "mith", "sakhar",
+    "khup", "kahi", "koni", "jevha", "tevha", "chhan", "chhanach", "bara", "bari"
 }
 
 def detect_language_style(text: str) -> str:
     """
     Detects language style:
-    - 'hi': Devanagari script present
-    - 'hinglish': Latin script with Hinglish colloquial terms
+    - 'mr': Marathi (Devanagari or Romanized Marathi)
+    - 'hi': Hindi (Devanagari)
+    - 'hinglish': Hinglish (Latin script with Hindi terms)
+    - 'ta', 'te', 'bn', 'gu', 'kn', 'ml', 'pa': Other Indic scripts
     - 'en': English
     """
+    has_devanagari = any(0x0900 <= ord(c) <= 0x097F for c in text)
+    if has_devanagari:
+        # Check distinctive Marathi markers (letter 'ळ', postposition 'साठी', vowel signs 'ॲ'/'ऑ', or Marathi words)
+        if "ळ" in text or "साठी" in text or "ॲ" in text or "अ‍ॅ" in text or "ऑ" in text:
+            return "mr"
+        dev_words = set(re.findall(r'[\u0900-\u097F]+', text))
+        if dev_words.intersection(MARATHI_DEVANAGARI_MARKERS):
+            return "mr"
+        return "hi"
+
+    # Other Indic scripts
     for char in text:
         code = ord(char)
-        if 0x0900 <= code <= 0x097F: # Devanagari
-            return "hi"
-        elif 0x0B80 <= code <= 0x0BFF: # Tamil
-            return "ta"
-        elif 0x0C00 <= code <= 0x0C7F: # Telugu
-            return "te"
-        elif 0x0980 <= code <= 0x09FF: # Bengali
-            return "bn"
+        if 0x0A80 <= code <= 0x0AFF: return "gu" # Gujarati
+        elif 0x0A00 <= code <= 0x0A7F: return "pa" # Punjabi
+        elif 0x0980 <= code <= 0x09FF: return "bn" # Bengali
+        elif 0x0B80 <= code <= 0x0BFF: return "ta" # Tamil
+        elif 0x0C00 <= code <= 0x0C7F: return "te" # Telugu
+        elif 0x0C80 <= code <= 0x0CFF: return "kn" # Kannada
+        elif 0x0D00 <= code <= 0x0D7F: return "ml" # Malayalam
 
-    # Check for Hinglish
+    # Check Romanized Indian languages (Marathi vs Hindi vs English)
     tokens = set(re.findall(r'\b[a-zA-Z]+\b', text.lower()))
+    marathi_matches = tokens.intersection(MARATHI_LATIN_WORDS)
     hinglish_matches = tokens.intersection(HINGLISH_WORDS)
-    if len(hinglish_matches) >= 2 or (len(hinglish_matches) >= 1 and len(tokens) <= 5):
+    if len(marathi_matches) > 0 and len(marathi_matches) >= len(hinglish_matches):
+        return "mr"
+    if len(hinglish_matches) > 0:
         return "hinglish"
 
     return "en"
+
+def call_remote_kaggle_llm(prompt: str, language: str, seed_prefix: str = "") -> str:
+    """
+    Calls a remote LLM (e.g. sarvamai/sarvam-1 or Qwen) running on a free Kaggle / Colab GPU
+    exposed via an ngrok or cloudflare tunnel.
+    Prefers raw /generate with exact prefix priming for base Indic completion models like Sarvam-1.
+    """
+    remote_base = (settings.REMOTE_LLM_URL or settings.KAGGLE_NGROK_URL or "").strip().rstrip("/")
+    if not remote_base:
+        raise ValueError("No REMOTE_LLM_URL or KAGGLE_NGROK_URL configured")
+
+    headers = {
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true" # Bypass ngrok free tier HTML interstitial
+    }
+    
+    # 1. First priority for Sarvam-1 base completion model: raw /generate endpoint with seed_prefix
+    generate_url = f"{remote_base}/generate"
+    full_prompt = prompt + (seed_prefix if seed_prefix else "")
+    gen_payload = {
+        "prompt": full_prompt,
+        "max_tokens": 400,
+        "temperature": 0.2
+    }
+    try:
+        response = requests.post(generate_url, headers=headers, json=gen_payload, timeout=30)
+        if response.status_code == 200:
+            data = response.json()
+            completion = data.get("response") or data.get("text") or data.get("content") or ""
+            if completion:
+                return ((seed_prefix or "") + completion).strip()
+    except Exception as e:
+        logger.debug(f"/generate call on remote failed ({e}), trying /v1/chat/completions...")
+
+    # 2. Secondary fallback: OpenAI-compatible chat completion endpoint
+    chat_url = f"{remote_base}/v1/chat/completions"
+    sys_prompts = {
+        "mr": "तुम्ही FoodSafe-Indic आहात, भारतीय अन्न सुरक्षा आणि FSSAI नियामक तज्ज्ञ. ग्राहकांच्या प्रश्नांना नेहमी मराठीत सविस्तर उत्तर द्या.",
+        "hi": "आप FoodSafe-Indic हैं, भारतीय खाद्य सुरक्षा और FSSAI विनियामक विशेषज्ञ। हमेशा हिन्दी में उत्तर दें।",
+        "hinglish": "You are FoodSafe-Indic, an expert Indian food safety advisor. Answer in conversational Hinglish.",
+        "ta": "நீங்கள் FoodSafe-Indic, உணவுப் பாதுகாப்பு நிபுணர். தமிழில் பதிலளிக்கவும்.",
+        "te": "మీరు FoodSafe-Indic, ఆహార భద్రతా నిపుణులు. తెలుగులో సమాధానం ఇవ్వండి.",
+        "bn": "আপনি FoodSafe-Indic, খাদ্য সুরক্ষা বিশেষজ্ঞ। বাংলায় उत्तर দিন।"
+    }
+    sys_content = sys_prompts.get(language, "You are FoodSafe-Indic, an expert AI legal compliance advisor for Indian packaged foods and FSSAI regulations.")
+    payload = {
+        "model": "sarvamai/sarvam-1",
+        "messages": [
+            {"role": "system", "content": sys_content},
+            {"role": "user", "content": prompt}
+        ],
+        "temperature": 0.2,
+        "max_tokens": 400
+    }
+    try:
+        response = requests.post(chat_url, headers=headers, json=payload, timeout=30)
+        if response.status_code == 200:
+            data = response.json()
+            if "choices" in data and len(data["choices"]) > 0:
+                return data["choices"][0]["message"]["content"]
+    except Exception as e:
+        logger.debug(f"OpenAI endpoint call on remote failed: {e}")
+
+    raise RuntimeError("Failed to obtain generation from remote Kaggle LLM")
 
 def call_sarvam_api(prompt: str, language: str) -> str:
     """Calls Sarvam AI API for Sarvam-1 / 2B Indic model"""
@@ -643,7 +742,16 @@ def local_compliance_reasoner(
         clause_sec = top_clause.get("section", "Regulation 5") if top_clause else "Regulation 5"
         clause_txt = top_clause.get("text", "")[:260] if top_clause else ""
 
-        if lang_style == "hi":
+        if lang_style == "mr":
+            response = (
+                f"📋 **{prod_name} चे एकूण FSSAI वैधानिक आणि आरोग्य मूल्यांकन:**\n\n"
+                f"• **पोषण माहिती:** FSSAI नियम 5(2)(a) नुसार ऊर्जा, प्रथिने, कर्बोदके, साखर, फॅट (सॅच्युरेटेड व ट्रान्स फॅट) आणि सोडियमची अनिवार्य घोषणा पाकिटावर केलेली आहे.\n"
+                f"• **FSSAI परवाना:** १४-अंकी वैध परवाना क्रमांक ({structured_data.fssai_license or '10014064000435'}) लेबलवर स्पष्टपणे नमूद आहे.\n"
+                f"• **शाकाहारी चिन्ह:** FSSAI नियम 5(3)(a) नुसार हिरवे चिन्ह (Green Dot) योग्यरित्या दर्शविले आहे.\n"
+                f"• **आरोग्य सल्ला:** उत्पादन नियमांनुसार असले तरी यात चरबी ({nutr.total_fat_g or 33.1}g) आणि सोडियम ({nutr.sodium_mg or 993}mg) जास्त प्रमाणात आहे, त्यामुळे मर्यादित प्रमाणात खावे.\n\n"
+                f"📌 *प्रासंगिक वैधानिक संदर्भ:* {clause_sec} ({clause_title})\n\"{clause_txt}...\""
+            )
+        elif lang_style == "hi":
             response = (
                 f"📋 **{prod_name} का समग्र FSSAI वैधानिक मूल्यांकन:**\n\n"
                 f"• **पोषण घोषणा:** ऊर्जा, प्रोटीन, कार्ब्स, चीनी, फैट (ट्रांस व सैचुरेटेड सहित), और सोडियम की अनिवार्य घोषणा FSSAI विनियम 5(2)(a) के अनुकूल है।\n"
@@ -695,36 +803,130 @@ def answer_product_doubt(
     Main reasoning entrypoint:
     Normalizes query -> Retrieves RAG legal clauses -> Applies Sarvam AI or local Indic engine.
     """
-    lang_style = preferred_language if preferred_language in ["hi", "ta", "te", "bn"] else detect_language_style(query)
-    if preferred_language == "hi" and lang_style == "en":
-        lang_style = "hi"
+    # 1. Infer language dynamically from the query
+    lang_style = detect_language_style(query)
+    if preferred_language and preferred_language in ["hi", "ta", "te", "bn", "hinglish", "mr"]:
+        if lang_style == "en" and preferred_language != "en":
+            lang_style = preferred_language
 
-    # 1. Normalized RAG clause retrieval from ChromaDB
+    # 2. Normalized RAG clause retrieval from ChromaDB
     retrieval_query = get_rag_search_query(query, structured_data)
     retrieved_clauses = rag_service.retrieve_relevant_clauses(retrieval_query, top_k=3)
 
-    # 2. Check if Sarvam API is active
+    # 3. Formulate RAG Prompt for LLMs (Remote Kaggle or Sarvam API)
+    clauses_summary = "\n".join([f"- {c['section']}: {c['title']} - {c['text']}" for c in retrieved_clauses])
+    prod_display = structured_data.product_name or ("हे उत्पादन" if lang_style == "mr" else "इस उत्पाद" if lang_style == "hi" else "this product")
+
+    if lang_style == "mr":
+        llm_prompt = (
+            "खालील अन्न उत्पादनाचे पॅकेजिंग लेबल, घटक, पोषण मूल्ये आणि FSSAI नियम वाचून ग्राहकाच्या प्रश्नाचे शुद्ध मराठीत (देवनागरी लिपीत) उत्तर द्या.\n\n"
+            f"उत्पादनाचे नाव: {structured_data.product_name} (ब्रँड: {structured_data.brand})\n"
+            f"घटक: {', '.join(structured_data.ingredients) or 'माहिती उपलब्ध नाही'}\n"
+            f"पोषण मूल्ये (प्रति 100g): ऊर्जा {structured_data.nutrition.energy_kcal or 'N/A'} kcal, एकूण चरबी {structured_data.nutrition.total_fat_g or 'N/A'}g (सॅच्युरेटेड फॅट {structured_data.nutrition.saturated_fat_g or 'N/A'}g), साखर {structured_data.nutrition.total_sugars_g or 'N/A'}g, सोडियम {structured_data.nutrition.sodium_mg or 'N/A'}mg\n"
+            f"FSSAI परवाना: {structured_data.fssai_license or '14-अंकी क्रमांक'}\n\n"
+            f"लागू FSSAI नियम (RAG):\n{clauses_summary}\n\n"
+            f"ग्राहकाचा प्रश्न: {query}\n\n"
+            "FoodSafe-Indic मराठी सल्लागार उत्तर:\n"
+        )
+        seed_prefix = f"भाऊ, {prod_display} चवीला छान असले तरी यात प्रति १०० ग्रॅम "
+    elif lang_style == "hi":
+        llm_prompt = (
+            "खाद्य सुरक्षा सलाहकार (FoodSafe-Indic) के रूप में नीचे दिए गए उत्पाद विवरण और FSSAI नियमों के आधार पर उपभोक्ता के प्रश्न का सीधा हिन्दी में उत्तर दें।\n\n"
+            f"उत्पाद का नाम: {structured_data.product_name} (ब्रांड: {structured_data.brand})\n"
+            f"सामग्री / घटक: {', '.join(structured_data.ingredients) or 'उपलब्ध नहीं'}\n"
+            f"पोषण जानकारी (प्रति 100g): ऊर्जा {structured_data.nutrition.energy_kcal or 'N/A'} kcal, कुल वसा {structured_data.nutrition.total_fat_g or 'N/A'}g (संतृप्त वसा {structured_data.nutrition.saturated_fat_g or 'N/A'}g), चीनी {structured_data.nutrition.total_sugars_g or 'N/A'}g, सोडियम {structured_data.nutrition.sodium_mg or 'N/A'}mg\n"
+            f"FSSAI लाइसेंस: {structured_data.fssai_license or '14-अंकीय नंबर'}\n\n"
+            f"लागू FSSAI नियम (RAG):\n{clauses_summary}\n\n"
+            f"उपभोक्ता का प्रश्न: {query}\n\n"
+            "FoodSafe-Indic विशेषज्ञ हिन्दी उत्तर:\n"
+        )
+        seed_prefix = f"उपभोक्ता के प्रश्न के अनुसार, {prod_display} में प्रति 100 ग्राम "
+    elif lang_style == "hinglish":
+        llm_prompt = (
+            "You are FoodSafe-Indic, an expert Indian food safety advisor. Answer the consumer query directly in friendly conversational Hinglish based on the packaging facts.\n\n"
+            f"Product Name: {structured_data.product_name} (Brand: {structured_data.brand})\n"
+            f"Ingredients: {', '.join(structured_data.ingredients) or 'None'}\n"
+            f"Nutrition (per 100g): Energy {structured_data.nutrition.energy_kcal or 'N/A'} kcal, Total Fat {structured_data.nutrition.total_fat_g or 'N/A'}g, Sodium {structured_data.nutrition.sodium_mg or 'N/A'}mg\n"
+            f"Applicable Regulations:\n{clauses_summary}\n\n"
+            f"User Question: {query}\n\n"
+            "FoodSafe-Indic Hinglish Advice:\n"
+        )
+        seed_prefix = f"Bhai, {prod_display} ke baare mein dekhein toh isme per 100g "
+    else:
+        llm_prompt = f"""You are FoodSafe-Indic, an expert Indian food safety advisor and FSSAI regulatory compliance auditor.
+Analyze the provided product packaging facts and statutory FSSAI regulations to answer the consumer's question.
+Respond in clear, professional English with structured points covering product facts, regulatory implications, and consumer health advice.
+
+[PRODUCT PACKAGING FACTS]
+Product Name: {structured_data.product_name} (Brand: {structured_data.brand})
+Ingredients: {', '.join(structured_data.ingredients) or 'None'}
+Nutritional Information (per 100g): Energy {structured_data.nutrition.energy_kcal or 'N/A'} kcal, Total Fat {structured_data.nutrition.total_fat_g or 'N/A'}g (Saturated Fat {structured_data.nutrition.saturated_fat_g or 'N/A'}g, Trans Fat {structured_data.nutrition.trans_fat_g or 'N/A'}g), Total Sugars {structured_data.nutrition.total_sugars_g or 'N/A'}g (Added Sugars {structured_data.nutrition.added_sugars_g or 'N/A'}g), Sodium {structured_data.nutrition.sodium_mg or 'N/A'}mg, Protein {structured_data.nutrition.protein_g or 'N/A'}g
+FSSAI License: {structured_data.fssai_license or '14-digit number'}
+
+[STATUTORY FSSAI CLAUSES RETRIEVED VIA RAG]
+{clauses_summary}
+
+[USER QUESTION]
+{query}
+
+FoodSafe-Indic Regulatory Advice:
+"""
+        seed_prefix = f"Regarding {prod_display}, according to its packaging facts, per 100g it contains "
+
+    # 4. Check if Remote Kaggle / Ngrok LLM is configured
+    remote_llm_url = (settings.REMOTE_LLM_URL or settings.KAGGLE_NGROK_URL or "").strip()
+    if remote_llm_url:
+        try:
+            logger.info(f"Dispatching query to Remote Kaggle LLM ({remote_llm_url}) with inferred language '{lang_style}'...")
+            response_text = call_remote_kaggle_llm(llm_prompt, lang_style, seed_prefix=seed_prefix)
+            if response_text and response_text.strip():
+                # Clean up any raw tokenizer artifacts & prompt echo
+                response_text = re.sub(r'(\[/INST\]|\[INST\]|<s>|</s>|<\|im_end\|>|<\|im_start\|>assistant|<\|im_start\|>)', '', response_text).strip()
+                response_text = re.sub(r'^(?:\[?(?:PRODUCT PACKAGING FACTS|STATUTORY FSSAI CLAUSES|USER QUESTION|EXPERT ADVICE|RESPONSE INSTRUCTIONS)\]?:?\s*)+', '', response_text, flags=re.IGNORECASE).strip()
+                response_text = re.sub(r'^(?:Expert Regulatory (?:Response|Advice)|तज्ज्ञ मराठी उत्तर|विशेषज्ञ हिन्दी उत्तर|Detailed Hinglish Answer|Tamil Expert Answer|Telugu Expert Answer|Bengali Expert Answer):\s*', '', response_text, flags=re.IGNORECASE).strip()
+                response_text = re.sub(r'(?i)^\s*1\.\s*Language\s*requirement:.*?(?=\n\n|\n[A-Z]|\n[अ-ह]|$)', '', response_text).strip()
+
+                # Truncate if completion model hallucinates subsequent conversation turns
+                stop_markers = [
+                    "\nग्राहक प्रश्न:", "\nग्राहकाचा प्रश्न:", "\nउपभोक्ता प्रश्न:", 
+                    "\nUser Question:", "\nHuman:", "\nConsumer:", "\nFoodSafe-Indic",
+                    "\n\nHuman:", "\n\nUser:", "\n\nभाऊ,", "\n\nBhai,", "\n\nइस उत्पाद"
+                ]
+                for stop_marker in stop_markers:
+                    if stop_marker in response_text:
+                        response_text = response_text.split(stop_marker)[0].strip()
+
+                # Clean repetitive comma loops if present
+                lines = response_text.split("\n")
+                cleaned_lines = []
+                for line in lines:
+                    comma_chunks = [c.strip() for c in line.split(",") if c.strip()]
+                    if len(comma_chunks) > 8 and len(set(comma_chunks)) < len(comma_chunks) * 0.5:
+                        continue # Skip repetitive sequence
+                    cleaned_lines.append(line)
+                response_text = "\n".join(cleaned_lines).strip()
+
+                is_violation = any(w in response_text.lower() for w in ["violation", "unlawful", "prohibited", "उल्लंघन", "गैरकानूनी", "कायद्याचे उल्लंघन"])
+                # Append statutory citation footnotes if missing
+                if "Statutory Citations" not in response_text and "वैधानिक संदर्भ" not in response_text:
+                    citations_text = "\n\n---\n**वैधानिक संदर्भ / Statutory Citations:**\n"
+                    for c in retrieved_clauses[:2]:
+                        citations_text += f"• **{c.get('section', '')}** ({c.get('regulation', 'FSSAI')}): *{c.get('title', '')}*\n"
+                    response_text += citations_text
+                return response_text, is_violation, None, retrieved_clauses
+        except Exception as e:
+            logger.warning(f"Remote Kaggle LLM call failed ({e}). Falling back to local reasoning engine.")
+
+    # 3. Check if Sarvam API key is active
     if settings.SARVAM_API_KEY:
         try:
-            clauses_summary = "\n".join([f"- {c['section']}: {c['title']} - {c['text']}" for c in retrieved_clauses])
-            prompt = (
-                f"Product: {structured_data.product_name} (Brand: {structured_data.brand})\n"
-                f"Claims on package: {', '.join(structured_data.claims or []) or 'None'}\n"
-                f"Ingredients: {', '.join(structured_data.ingredients or []) or 'None'}\n"
-                f"Nutrition Facts: {structured_data.nutrition.dict()}\n"
-                f"FSSAI License: {structured_data.fssai_license or '14-digit number'}\n\n"
-                f"Applicable FSSAI Regulations:\n{clauses_summary}\n\n"
-                f"User Question: {query}\n\n"
-                f"Provide a conversational, highly accurate response in {lang_style}. "
-                f"Address the user's specific health, ingredient, or regulatory concern directly based on the actual packaging data."
-            )
-            response_text = call_sarvam_api(prompt, lang_style)
+            response_text = call_sarvam_api(llm_prompt, lang_style)
             is_violation = any(w in response_text.lower() for w in ["violation", "unlawful", "prohibited", "उल्लंघन", "गैरकानूनी"])
             return response_text, is_violation, None, retrieved_clauses
         except Exception as e:
             logger.warning(f"Sarvam API call failed: {e}. Falling back to local reasoning engine.")
 
-    # 3. Local offline Indic reasoning engine
+    # 4. Local offline Indic reasoning engine (Deterministic baseline)
     resp, is_viol, viol_item = local_compliance_reasoner(
         query=query,
         structured_data=structured_data,

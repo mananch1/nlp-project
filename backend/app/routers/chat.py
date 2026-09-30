@@ -16,21 +16,24 @@ router = APIRouter(prefix="/chat", tags=["Multilingual Chat & RAG"])
 async def chat_message(req: ChatRequest):
     """
     Consumer doubt resolution endpoint:
-    Retrieves FSSAI legal clauses via RAG and formulates bilingual response with citations.
+    Infers language directly from user query -> Queries RAG -> Generates LLM response.
     """
     struct_data = req.structured_data or StructuredProductData()
+    from ..services.reasoning_service import detect_language_style
+    
+    inferred_lang = detect_language_style(req.query)
     
     resp_text, is_violation, viol_item, clauses = answer_product_doubt(
         query=req.query,
         structured_data=struct_data,
         conversation_history=req.conversation_history,
-        preferred_language=req.language
+        preferred_language=inferred_lang
     )
 
     return ChatResponse(
         response=resp_text,
         original_query=req.query,
-        detected_language=req.language or "en",
+        detected_language=inferred_lang,
         cited_clauses=clauses,
         potential_violation_detected=is_violation,
         violation_details=viol_item
@@ -71,18 +74,21 @@ async def voice_doubt(
     if not struct_data:
         struct_data = parse_packaging_text(raw_ocr_text)
 
-    # 3. Formulate legal RAG response
+    # 3. Formulate legal RAG response with auto-inferred language
+    from ..services.reasoning_service import detect_language_style
+    inferred_lang = detect_language_style(transcribed_text) if transcribed_text else (detected_lang[:2] if detected_lang else "en")
+
     resp_text, is_violation, viol_item, clauses = answer_product_doubt(
         query=transcribed_text,
         structured_data=struct_data,
         conversation_history=[],
-        preferred_language=detected_lang[:2]
+        preferred_language=inferred_lang
     )
 
     return ChatResponse(
         response=resp_text,
         original_query=transcribed_text,
-        detected_language=detected_lang,
+        detected_language=inferred_lang,
         cited_clauses=clauses,
         potential_violation_detected=is_violation,
         violation_details=viol_item

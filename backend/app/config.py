@@ -24,6 +24,10 @@ class Settings(BaseSettings):
     SARVAM_LLM_MODEL: str = "sarvam-2b"
     SARVAM_STT_MODEL: str = "saarika:v2"
     
+    # Remote Kaggle / Ngrok / Colab LLM Server URL
+    REMOTE_LLM_URL: str = os.getenv("REMOTE_LLM_URL", "")
+    KAGGLE_NGROK_URL: str = os.getenv("KAGGLE_NGROK_URL", "")
+    
     # Offline fallback settings
     EMBEDDING_MODEL_NAME: str = "sentence-transformers/all-MiniLM-L6-v2"
     LOCAL_WHISPER_MODEL: str = "tiny"

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Mic, MicOff, Bot, User, AlertCircle, Loader2, Sparkles, RotateCcw, Volume2 } from 'lucide-react';
+import { Send, Mic, MicOff, Bot, User, AlertCircle, Loader2, Sparkles, RotateCcw } from 'lucide-react';
 import { sendChatMessage, sendVoiceQuery } from '../api';
 
 const QUICK_DOUBTS = [
@@ -13,7 +13,6 @@ const QUICK_DOUBTS = [
 
 export default function ChatAssistant({ auditData, chatHistory, setChatHistory, onResetAll }) {
   const [inputText, setInputText] = useState('');
-  const [selectedLanguage, setSelectedLanguage] = useState('hi');
   const [loading, setLoading] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [speechStatus, setSpeechStatus] = useState('');
@@ -39,11 +38,11 @@ export default function ChatAssistant({ auditData, chatHistory, setChatHistory, 
         const recognition = new SpeechRecognition();
         recognition.continuous = false;
         recognition.interimResults = true;
-        recognition.lang = selectedLanguage === 'hi' ? 'hi-IN' : 'en-IN';
+        recognition.lang = 'hi-IN'; // Multilingual Indic listener (handles Hindi, Hinglish, & English)
 
         recognition.onstart = () => {
           setIsRecording(true);
-          setSpeechStatus('Listening... Speak your question');
+          setSpeechStatus('Listening... Speak in Hindi, Hinglish, or English');
         };
 
         recognition.onresult = (event) => {
@@ -72,20 +71,14 @@ export default function ChatAssistant({ auditData, chatHistory, setChatHistory, 
         console.warn('SpeechRecognition initialization error:', err);
       }
     }
-  }, [selectedLanguage]);
+  }, []);
 
   const handleNewChat = () => {
-    const lang = selectedLanguage;
-    const isHindi = lang === 'hi';
     const prodName = auditData?.structured_data?.product_name;
 
     const initialGreeting = prodName
-      ? isHindi
-        ? `नया संवाद आरंभ! मैंने "${prodName}" के लेबल की जानकारी सुरक्षित रखी है। आप एसिडिटी, प्रिजर्वेटिव्स, ट्रांस फैट, या FSSAI नियमों पर कोई भी सवाल पूछ सकते हैं।`
-        : `New chat session started for "${prodName}". Ask any question regarding acidity, preservatives, trans fat, or statutory FSSAI compliance.`
-      : isHindi
-      ? `नमस्ते! मैं FoodSafe-Indic हूँ, भारतीय खाद्य सुरक्षा एवं मानक प्राधिकरण (FSSAI) का कानूनी AI सहायक। आप पैकेजिंग नियमों, मिलावट, या लेबलिंग मानकों पर कोई भी सवाल पूछ सकते हैं।`
-      : `Hello! I am FoodSafe-Indic, your AI legal advisor for Indian FSSAI food safety regulations. You can ask any question about labelling rules, nutritional claims, or upload packaging photos to audit.`;
+      ? `👋 New session started for "${prodName}". Ask any question in Hindi, Hinglish, or English (e.g. acidity, preservatives, trans fat, FSSAI rules). Language is auto-inferred.`
+      : `👋 नमस्ते! मैं FoodSafe-Indic हूँ, FSSAI कानूनी अनुपालन AI सहायक। आप पैकेजिंग नियमों, मिलावट, या लेबलिंग मानकों पर हिन्दी, Hinglish या English में कोई भी सवाल पूछ सकते हैं। भाषा स्वतः पहचानी जाएगी।`;
 
     setChatHistory([
       {
@@ -113,7 +106,6 @@ export default function ChatAssistant({ auditData, chatHistory, setChatHistory, 
       const res = await sendChatMessage({
         session_id: auditData?.session_id || 'manual_session',
         query: textToSend,
-        language: selectedLanguage,
         structured_data: auditData?.structured_data,
         conversation_history: chatHistory
       });
@@ -124,7 +116,8 @@ export default function ChatAssistant({ auditData, chatHistory, setChatHistory, 
         timestamp: new Date().toLocaleTimeString(),
         cited_clauses: res.cited_clauses,
         potential_violation_detected: res.potential_violation_detected,
-        violation_details: res.violation_details
+        violation_details: res.violation_details,
+        detected_language: res.detected_language
       };
       setChatHistory((prev) => [...prev, botMessage]);
     } catch (err) {
@@ -146,7 +139,6 @@ export default function ChatAssistant({ auditData, chatHistory, setChatHistory, 
     // 1. Try Browser Web Speech Recognition first
     if (speechRecognitionRef.current) {
       try {
-        speechRecognitionRef.current.lang = selectedLanguage === 'hi' ? 'hi-IN' : 'en-IN';
         speechRecognitionRef.current.start();
         setIsRecording(true);
         return;
@@ -175,7 +167,7 @@ export default function ChatAssistant({ auditData, chatHistory, setChatHistory, 
 
       mediaRecorderRef.current.start();
       setIsRecording(true);
-      setSpeechStatus('Recording audio...');
+      setSpeechStatus('Recording audio... Speak now');
     } catch (err) {
       console.error('Mic access denied:', err);
       alert('Microphone access was denied or not supported on this browser.');
@@ -206,21 +198,23 @@ export default function ChatAssistant({ auditData, chatHistory, setChatHistory, 
         audioBlob,
         sessionId,
         rawOcr,
-        selectedLanguage === 'hi' ? 'hi-IN' : 'en-IN',
+        'hi-IN',
         auditData?.structured_data
       );
 
       const userMessage = {
         role: 'user',
-        content: `🎙️ Spoken Doubt (${selectedLanguage}): "${res.original_query}"`,
-        timestamp: new Date().toLocaleTimeString()
+        content: `🎙️ Spoken Query: "${res.original_query}"`,
+        timestamp: new Date().toLocaleTimeString(),
+        detected_language: res.detected_language
       };
       const botMessage = {
         role: 'assistant',
         content: res.response,
         timestamp: new Date().toLocaleTimeString(),
         cited_clauses: res.cited_clauses,
-        potential_violation_detected: res.potential_violation_detected
+        potential_violation_detected: res.potential_violation_detected,
+        detected_language: res.detected_language
       };
       setChatHistory((prev) => [...prev, userMessage, botMessage]);
     } catch (err) {
@@ -241,7 +235,7 @@ export default function ChatAssistant({ auditData, chatHistory, setChatHistory, 
             <h3 className="text-sm font-bold text-slate-800 flex items-center gap-1.5">
               <span>Interactive Compliance Chat</span>
               <span className="text-[10px] font-semibold bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded">
-                Indic RAG
+                Sarvam-1 RAG
               </span>
             </h3>
             <p className="text-[11px] text-slate-500">
@@ -252,7 +246,7 @@ export default function ChatAssistant({ auditData, chatHistory, setChatHistory, 
           </div>
         </div>
 
-        {/* Header Actions: New Chat & Language Selector */}
+        {/* Header Actions: New Chat & Auto-Inferred Language Badge */}
         <div className="flex items-center gap-2">
           <button
             type="button"
@@ -264,17 +258,13 @@ export default function ChatAssistant({ auditData, chatHistory, setChatHistory, 
             <span>New Chat</span>
           </button>
 
-          <select
-            value={selectedLanguage}
-            onChange={(e) => setSelectedLanguage(e.target.value)}
-            className="bg-white border border-slate-300 rounded px-2 py-1 text-slate-700 text-xs font-semibold focus:outline-none focus:border-emerald-600"
+          <div
+            title="Language is automatically inferred from your voice or typed queries"
+            className="flex items-center gap-1.5 bg-emerald-50 text-emerald-800 text-[11px] font-semibold px-2.5 py-1 rounded border border-emerald-200 shadow-2xs cursor-default"
           >
-            <option value="hi">हिन्दी (Hindi)</option>
-            <option value="en">English</option>
-            <option value="ta">தமிழ் (Tamil)</option>
-            <option value="te">తెలుగు (Telugu)</option>
-            <option value="bn">বাংলা (Bengali)</option>
-          </select>
+            <Sparkles className="h-3 w-3 text-emerald-600" />
+            <span>Auto Language</span>
+          </div>
         </div>
       </div>
 
@@ -300,7 +290,7 @@ export default function ChatAssistant({ auditData, chatHistory, setChatHistory, 
         <div className="bg-red-50 border-b border-red-200 px-4 py-1.5 flex items-center justify-between text-xs text-red-700">
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 bg-red-600 rounded-full animate-ping" />
-            <span className="font-semibold">{speechStatus || 'Listening... Speak now'}</span>
+            <span className="font-semibold">{speechStatus || 'Listening... Speak now in Hindi, Hinglish, or English'}</span>
           </div>
           <button
             type="button"
@@ -319,7 +309,7 @@ export default function ChatAssistant({ auditData, chatHistory, setChatHistory, 
             <Bot className="h-10 w-10 text-slate-300 mb-2" />
             <p className="text-sm font-medium text-slate-600">No queries asked yet</p>
             <p className="text-xs max-w-sm mt-1">
-              Ask doubts by typing in Hindi, Hinglish, or English, or click the microphone to speak your question directly.
+              Ask doubts by typing in Hindi, Hinglish, or English, or click the microphone to speak your question directly. Language is inferred automatically.
             </p>
           </div>
         ) : (
@@ -350,13 +340,21 @@ export default function ChatAssistant({ auditData, chatHistory, setChatHistory, 
                   </div>
                 )}
 
-                <span
-                  className={`block text-[10px] mt-1 text-right ${
-                    msg.role === 'user' ? 'text-emerald-100' : 'text-slate-400'
-                  }`}
-                >
-                  {msg.timestamp}
-                </span>
+                <div className="flex items-center justify-between mt-1 pt-1 border-t border-slate-200/50">
+                  {msg.detected_language ? (
+                    <span className="text-[9px] uppercase tracking-wider font-semibold opacity-75">
+                      {msg.detected_language === 'hinglish' ? 'Hinglish' : msg.detected_language === 'hi' ? 'हिन्दी' : msg.detected_language}
+                    </span>
+                  ) : <span />}
+
+                  <span
+                    className={`text-[10px] ${
+                      msg.role === 'user' ? 'text-emerald-100' : 'text-slate-400'
+                    }`}
+                  >
+                    {msg.timestamp}
+                  </span>
+                </div>
               </div>
 
               {msg.role === 'user' && (
@@ -373,7 +371,7 @@ export default function ChatAssistant({ auditData, chatHistory, setChatHistory, 
             <Bot className="h-5 w-5 text-emerald-600" />
             <div className="flex items-center gap-1.5 bg-slate-100 px-3 py-1.5 rounded-full border border-slate-200">
               <Loader2 className="h-3 w-3 animate-spin text-emerald-600" />
-              <span>Analyzing product facts with FSSAI regulations...</span>
+              <span>Generating response with Sarvam-1 LLM & FSSAI RAG...</span>
             </div>
           </div>
         )}
@@ -385,7 +383,7 @@ export default function ChatAssistant({ auditData, chatHistory, setChatHistory, 
         <button
           type="button"
           onClick={isRecording ? stopRecording : startRecording}
-          title={isRecording ? 'Stop Recording' : 'Speak doubt in Hindi or English'}
+          title={isRecording ? 'Stop Recording' : 'Speak doubt in Hindi, Hinglish, or English'}
           className={`p-2.5 rounded-lg transition-colors ${
             isRecording
               ? 'bg-red-600 text-white animate-pulse'
@@ -400,7 +398,7 @@ export default function ChatAssistant({ auditData, chatHistory, setChatHistory, 
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-          placeholder={`Ask doubt in ${selectedLanguage === 'hi' ? 'Hindi / Hinglish' : 'English'} (e.g. Acidity ke liye accha hai kya?)...`}
+          placeholder="Ask in Hindi, Hinglish, or English (e.g. 'bahi mujhe bata acidity ke liye kaisa hai?')..."
           className="flex-1 bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-emerald-600"
         />
 
